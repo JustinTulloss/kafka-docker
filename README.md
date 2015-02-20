@@ -3,39 +3,22 @@ kafka-docker
 
 Dockerfile for [Apache Kafka](http://kafka.apache.org/)
 
+Forked from [wurstmeister](https://github.com/wurstmeister/kafka-docker).
+
 The image is available directly from https://index.docker.io
 
-##Pre-Requisites
+## Configuration Options
 
-- install fig [http://www.fig.sh/install.html](http://www.fig.sh/install.html)
-- modify the ```KAFKA_ADVERTISED_HOST_NAME``` in ```fig.yml``` to match your docker host IP (Note: Do not use localhost or 127.0.0.1 as the host ip if you want to run multiple brokers.)
-- if you want to customise any Kafka parameters, simply add them as environment variables in ```fig.yml```, e.g. in order to increase the ```message.max.bytes``` parameter set the environment to ```KAFKA_MESSAGE_MAX_BYTES: 2000000```. To turn off automatic topic creation set ```KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'```
+There are some special environment variables that you should set in a production cluster, although the defaults are fine for dev.
 
-##Usage
+- `KAFKA_ADVERTISED_HOSTNAME`: This is hostname that other brokers can communicate with this broker on. It gets published to Zookeeper.
+- `KAFKA_ADVERTISED_PORT`: This is is the port that other brokers can communicate with this broker on. It gets communicated to Zookeeper. This
+  is the port that is exposed on the host side, not inside the container, so you'll want to explicitly assign this port when running the container.
+  It defaults to 9092.
+- `KAFKA_BROKER_ID`: The identifier for this broker in logs. It defaults to the value of `KAFKA_ADVERTISED_PORT`
+- `KAFKA_LOG_DIRS`: The directory where all data is stored. Defaluts to `/kafka/kafka-logs-$KAFKA_BROKER_ID`. You should make this directory a volume or within a volume in order to prevent data loss when you stop the container.
+- `KAFKA_ZOOKEEPER_CONNECT`: Connection string for connecting to zookeeper. Defaults to looking for a linked zookeeper container called `zk`.
 
-Start a cluster:
+In addition, `KAFKA_HEAP_OPTS` and `KAFKA_LOG4J_OPTS` will be passed to the `kafka-server-start.sh` script. Use these to configure logging and Java.
 
-- ```fig up -d ```
-
-
-Add more brokers:
-
-- ```fig scale kafka=3```
-
-Destroy a cluster:
-
-- ```fig stop```
-
-##Note
-
-The default ```fig.yml``` should be seen as a starting point. By default each broker will get a new port number and broker id on restart. Depending on your use case this might not be desirable. If you need to use specific ports and broker ids, modify the fig configuration accordingly, e.g. [fig-single-broker.yml](https://github.com/wurstmeister/kafka-docker/blob/master/fig-single-broker.yml):
-
-- ```fig -f fig-single-broker.yml up```
- 
-
-##Tutorial
-
-[http://wurstmeister.github.io/kafka-docker/](http://wurstmeister.github.io/kafka-docker/)
-
-
-
+All environment variables except `KAFKA_HEAP_OPTS` and `KAFKA_LOG4J_OPTS` that start with `KAFKA_` will be converted to the kafka configuration. The `KAFKA_` prefix will be removed, the key will be lower cased, and `_` will be replaced with `.`. So to configure `message.max.bytes` you would set the `KAFKA_MESSAGE_MAX_BYTES` environment variable.
