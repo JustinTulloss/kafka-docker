@@ -1,14 +1,14 @@
-FROM ubuntu:trusty
+FROM debian:jessie
 
-MAINTAINER Wurstmeister 
+MAINTAINER Justin Tulloss
 
-RUN apt-get update; apt-get install -y unzip  openjdk-6-jdk wget git docker.io
+RUN apt-get update; apt-get install -y openjdk-7-jre-headless curl
 
-RUN wget -q http://apache.mirrors.lucidnetworks.net/kafka/0.8.2.0/kafka_2.10-0.8.2.0.tgz -O /tmp/kafka_2.10-0.8.2.0.tgz
-RUN tar xfz /tmp/kafka_2.10-0.8.2.0.tgz -C /opt
+RUN curl http://apache.mirrors.lucidnetworks.net/kafka/0.8.2.0/kafka_2.10-0.8.2.0.tgz | tar xfz - -C /opt
+
+RUN apt-get remove -y curl; apt-get -y autoremove; apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*-jdk
 
 ENV KAFKA_HOME /opt/kafka_2.10-0.8.2.0
 ENV KAFKA_HEAP_OPTS -Xmx128M -Xms128M
 ADD start-kafka.sh /usr/bin/start-kafka.sh
-ADD broker-list.sh /usr/bin/broker-list.sh
-CMD start-kafka.sh 
+CMD start-kafka.sh
