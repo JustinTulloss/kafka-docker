@@ -16,7 +16,7 @@ There are some special environment variables that you should set in a production
   is the port that is exposed on the host side, not inside the container, so you'll want to explicitly assign this port when running the container.
   It defaults to 9092.
 - `KAFKA_BROKER_ID`: The identifier for this broker in logs. It defaults to the value of `KAFKA_ADVERTISED_PORT`
-- `KAFKA_LOG_DIRS`: The directory where all data is stored. Defaluts to `/kafka/kafka-logs-$KAFKA_BROKER_ID`. You should make this directory a volume or within a volume in order to prevent data loss when you stop the container.
+- `KAFKA_LOG_DIRS`: The directory where all data is stored. Defaults to `/kafka/kafka-logs-$KAFKA_BROKER_ID`. You should make this directory a volume or within a volume in order to prevent data loss when you stop the container.
 - `KAFKA_ZOOKEEPER_CONNECT`: Connection string for connecting to zookeeper. Defaults to looking for a linked zookeeper container called `zk`.
 
 In addition, `KAFKA_HEAP_OPTS` and `KAFKA_LOG4J_OPTS` will be passed to the `kafka-server-start.sh` script. Use these to configure logging and Java.
